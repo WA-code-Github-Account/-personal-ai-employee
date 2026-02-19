@@ -1,0 +1,165 @@
+# AI Employee System - Git Ignore File
+# Prevents sensitive and unnecessary files from being committed to Git
+
+# ─────────────────────────────────────────────────────────────
+# 🔒 Sensitive Credentials & Environment Files
+# ─────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# OAuth & API Credentials
+credentials.json
+token.pickle
+*.key
+*.secret
+*.pem
+*.crt
+
+# ─────────────────────────────────────────────────────────────
+# 📝 Log Files
+# ─────────────────────────────────────────────────────────────
+*.log
+logs/
+*.log.*
+agent.log
+audit.log
+error_recovery.log
+health_monitor.log
+orchestration.log
+planner.log
+ralph_wiggum.log
+
+# ─────────────────────────────────────────────────────────────
+# 🐍 Python Cache & Build Files
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE & Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─────────────────────────────────────────────────────────────
+# 🗂️ Odoo Installation (Space Issues)
+# ─────────────────────────────────────────────────────────────
+Odoo17/
+odoo/
+*.odoo
+.odoo/
+
+# ─────────────────────────────────────────────────────────────
+# 📊 Database Files
+# ─────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+filestore/
+
+# ─────────────────────────────────────────────────────────────
+# 🔄 Git & Version Control
+# ─────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+
+# ─────────────────────────────────────────────────────────────
+# 📦 Package & Dependency Files
+# ─────────────────────────────────────────────────────────────
+node_modules/
+bower_components/
+package-lock.json
+yarn.lock
+
+# ─────────────────────────────────────────────────────────────
+# 🧪 Test & Coverage Files
+# ─────────────────────────────────────────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ─────────────────────────────────────────────────────────────
+# 📬 Email & Communication Files
+# ─────────────────────────────────────────────────────────────
+*.pst
+*.ost
+mailbox/
+
+# ─────────────────────────────────────────────────────────────
+# 💾 Backup & Temporary Files
+# ─────────────────────────────────────────────────────────────
+*.bak
+*.backup
+*.old
+*.tmp
+*.temp
+~*
+*.orig
+
+# ─────────────────────────────────────────────────────────────
+# 🖼️ Media & Large Files (Optional)
+# ─────────────────────────────────────────────────────────────
+# Uncomment if you don't want to track media files
+# *.png
+# *.jpg
+# *.jpeg
+# *.gif
+# *.mp4
+# *.mov
+# *.avi
+# *.mp3
+# *.wav
+
+# ─────────────────────────────────────────────────────────────
+# 📁 Obsidian Vault (Optional - Uncomment if needed)
+# ─────────────────────────────────────────────────────────────
+# .obsidian/
+# AI_Employee_Vault/
+
+# ─────────────────────────────────────────────────────────────
+# ✅ What SHOULD be committed:
+# ─────────────────────────────────────────────────────────────
+# - Source code (*.py files except cache)
+# - Documentation (*.md files)
+# - Requirements (requirements.txt)
+# - Configuration templates (.env.example)
+# - Vault structure (empty .gitkeep files in folders)
