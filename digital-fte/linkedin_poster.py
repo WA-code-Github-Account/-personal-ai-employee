@@ -1,82 +1,122 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Facebook Poster - Social Media Automation for AI Employee
-Facebook Page par posts automate karne wala module
+LinkedIn Poster - Professional Social Media Automation
+LinkedIn par professional posts automate karne wala module
 
 ═══════════════════════════════════════════════════════════════════════════════
-📘 HOW TO GET FACEBOOK PAGE ACCESS TOKEN
+📘 HOW TO GET LINKEDIN API CREDENTIALS
 ═══════════════════════════════════════════════════════════════════════════════
 
-Step 1: Go to Facebook Graph API Explorer
+Step 1: Create LinkedIn Developer Account
 ─────────────────────────────────────────
-URL: https://developers.facebook.com/tools/explorer/
+URL: https://www.linkedin.com/developers/
 
-Step 2: Select Your Facebook Page
-─────────────────────────────────────────
-- Click on the "Facebook Page" dropdown at the top
-- Select the page you want to post to
-- Note: You must be an admin of the page
+1. LinkedIn pe login karein
+2. Developers page pe jayein
+3. "Create app" button click karein
 
-Step 3: Add Required Permissions
+Step 2: Create LinkedIn App
 ─────────────────────────────────────────
-Click "Add Permissions" and add these:
-✓ pages_show_list          - View page information
-✓ pages_read_engagement    - Read page engagement data
-✓ pages_manage_posts       - Create and manage page posts
-✓ pages_read_user_content  - Read user-generated content (optional)
+1. App name dein (e.g., "AI Employee System")
+2. Company select karein (ya personal brand)
+3. App logo upload karein (optional)
+4. Privacy policy URL (optional for testing)
 
-Step 4: Generate Access Token
+Step 3: Get API Credentials
 ─────────────────────────────────────────
-- Click "Generate Access Token" button
-- Review and accept permissions
-- Copy the generated token (long string starting with "EAA...")
+App create hone ke baad:
 
-Step 5: Get Your Page ID
+1. "Auth" tab pe jayein
+2. Note down ye values:
+   - Client ID
+   - Client Secret
+   - Redirect URL (default: https://www.linkedin.com/oauth/v2/authorization)
+
+Step 4: Request Permissions
 ─────────────────────────────────────────
-- Go to your Facebook Page
-- Click "About" section
-- Copy Page ID (numeric value, e.g., "123456789012345")
-- OR use Graph API: https://graph.facebook.com/me/accounts
+Required permissions:
+✓ w_member_social - Post updates on behalf of members
+✓ r_basicprofile  - Read basic profile information
+✓ r_emailaddress  - Read email address
+
+Permission request process:
+1. "Auth" tab mein "Request permission" click karein
+2. Permission select karein
+3. Use case describe karein
+4. Submit for review (2-3 days approval)
+
+Step 5: Generate Access Token (Testing)
+─────────────────────────────────────────
+For testing without full OAuth flow:
+
+Option A: LinkedIn API Explorer
+1. https://www.linkedin.com/developers/tools/oauth/access-token-generator
+2. App select karein
+3. Permissions select karein (w_member_social, r_basicprofile)
+4. "Generate access token" click karein
+5. Token copy karein (expires in 60 days)
+
+Option B: Manual OAuth Flow
+1. Browser mein ye URL open karein:
+   https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URL&scope=w_member_social%20r_basicprofile
+
+2. Authorize app
+3. Redirect URL pe authorization code milega
+4. Exchange code for token:
+   POST https://www.linkedin.com/oauth/v2/accessToken
+   - client_id=YOUR_CLIENT_ID
+   - client_secret=YOUR_CLIENT_SECRET
+   - code=AUTHORIZATION_CODE
+   - redirect_uri=YOUR_REDIRECT_URL
+   - grant_type=authorization_code
 
 Step 6: Add to .env File
 ─────────────────────────────────────────
 Open .env file in digital-fte/ folder and add:
 
-    FACEBOOK_PAGE_TOKEN=EAAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    FACEBOOK_PAGE_ID=123456789012345
+    LINKEDIN_ACCESS_TOKEN=AQXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    LINKEDIN_CLIENT_ID=XXXXXXXXXXXX
+    LINKEDIN_CLIENT_SECRET=XXXXXXXXXXXXXXXX
 
 Step 7: Test Your Token
 ─────────────────────────────────────────
-Run: python test_facebook.py
+Run: python test_linkedin.py
 
-This will verify your token and display page information.
+Ye script verify karegi ke token valid hai aur profile info display karegi.
 
 ═══════════════════════════════════════════════════════════════════════════════
 ⚠️ IMPORTANT NOTES
 ═══════════════════════════════════════════════════════════════════════════════
 
-• Token Expiry: User tokens expire in ~60 days. For long-term access, generate
-  a Long-Lived Token or use a Business Manager account.
+• Token Expiry: Access tokens expire in 60 days. Refresh token use karein
+  for long-term access.
+
+• Rate Limits: LinkedIn API has rate limits:
+  - 500 requests per day per user
+  - Don't post more than 5 times per day
+
+• Content Guidelines:
+  - Professional content only
+  - No spam or promotional content
+  - Follow LinkedIn's User Agreement
 
 • Security: NEVER commit your .env file to Git! It's already in .gitignore.
 
-• Permissions: If posting fails, check that all required permissions are granted.
+• API Version: Currently using v2. LinkedIn may deprecate older versions.
 
-• Page Access: You must be an admin or editor of the Facebook Page.
-
-• Rate Limits: Facebook API has rate limits. Don't post too frequently.
-
-• API Version: Currently using v18.0. Update if Facebook deprecates it.
+• Approval Process: Some permissions require LinkedIn approval (2-3 days).
 
 ═══════════════════════════════════════════════════════════════════════════════
 🔗 USEFUL LINKS
 ═══════════════════════════════════════════════════════════════════════════════
 
-• Graph API Explorer: https://developers.facebook.com/tools/explorer/
-• Page Access Tokens: https://developers.facebook.com/docs/pages/access-token
-• Graph API Docs: https://developers.facebook.com/docs/graph-api
-• Permission Reference: https://developers.facebook.com/docs/permissions
+• LinkedIn Developers: https://www.linkedin.com/developers/
+• API Documentation: https://learn.microsoft.com/en-us/linkedin/
+• Access Token Generator: https://www.linkedin.com/developers/tools/oauth/access-token-generator
+• API Explorer: https://www.linkedin.com/developers/tools/explorer
+• Share API: https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/share-on-linkedin
+• Rate Limits: https://learn.microsoft.com/en-us/linkedin/consumer/get-access#rate-limiting
 
 ═══════════════════════════════════════════════════════════════════════════════
 """
@@ -100,148 +140,194 @@ from error_recovery import retry_with_backoff, safe_execute, get_recovery_strate
 load_dotenv()
 
 # Roman Urdu: Configuration aur global variables
-VAULT_BASE = "D:/AI_Workspace_bronze_silver_gold/AI_Employee_Vault"
+VAULT_BASE = "D:/AI_Workspace_bronze_silver_gold_platinum/AI_Employee_Vault"
 PENDING_POSTS_DIR = os.path.join(VAULT_BASE, "Pending_Posts")
 DASHBOARD_PATH = os.path.join(VAULT_BASE, "Dashboard.md")
 
-# Roman Urdu: Facebook API configuration
-FACEBOOK_API_VERSION = "v18.0"
-FACEBOOK_GRAPH_URL = f"https://graph.facebook.com/{FACEBOOK_API_VERSION}"
+# Roman Urdu: LinkedIn API configuration
+LINKEDIN_API_VERSION = "202402"
+LINKEDIN_API_BASE_URL = "https://api.linkedin.com/v2"
+LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
+LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
 
 # Roman Urdu: Logging setup
-LOG_FILE = "facebook_poster.log"
+LOG_FILE = "linkedin_poster.log"
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(LOG_FILE),
+        logging.FileHandler(LOG_FILE, encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
 
-class FacebookPoster:
+class LinkedInPoster:
     """
-    Facebook Page Poster for AI Employee System
-    AI Employee System ke liye Facebook Page poster
+    LinkedIn Poster for AI Employee System
+    LinkedIn par professional posts create karne wala class
     """
 
-    def __init__(self, page_token: str = None, page_id: str = None, test_mode: bool = False):
+    def __init__(self, access_token: str = None, client_id: str = None,
+                 client_secret: str = None, test_mode: bool = False):
         """
-        Initialize Facebook Poster
-        Facebook Poster ko initialize karna
-        
+        Initialize LinkedIn Poster
+        LinkedIn Poster ko initialize karna
+
         Args:
-            page_token: Facebook Page Access Token
-            page_id: Facebook Page ID
+            access_token: LinkedIn OAuth access token
+            client_id: LinkedIn app client ID
+            client_secret: LinkedIn app client secret
             test_mode: If True, save drafts without posting
         """
         # Roman Urdu: Configuration se credentials lena
-        self.page_token = page_token or os.getenv("FACEBOOK_PAGE_TOKEN", "")
-        self.page_id = page_id or os.getenv("FACEBOOK_PAGE_ID", "")
+        self.access_token = access_token or os.getenv("LINKEDIN_ACCESS_TOKEN", "")
+        self.client_id = client_id or os.getenv("LINKEDIN_CLIENT_ID", "")
+        self.client_secret = client_secret or os.getenv("LINKEDIN_CLIENT_SECRET", "")
         self.test_mode = test_mode
-        
+
         # Roman Urdu: Pending posts directory ensure karna
         os.makedirs(PENDING_POSTS_DIR, exist_ok=True)
-        
+
         # Roman Urdu: Initialization log
         if self.test_mode:
-            logger.info("Facebook Poster initialized in TEST MODE")
+            logger.info("LinkedIn Poster initialized in TEST MODE")
             logger.info("Posts will be saved as drafts, not published")
         else:
-            logger.info(f"Facebook Poster initialized for Page ID: {self.page_id}")
-        
+            logger.info(f"LinkedIn Poster initialized (Client ID: {self.client_id[:8]}...)")
+
         # Roman Urdu: Audit log
-        log_task_start("Facebook Poster Init", source="facebook_poster", 
+        log_task_start("LinkedIn Poster Init", source="linkedin_poster",
                       test_mode=str(test_mode))
 
     def is_configured(self) -> bool:
         """
-        Check if Facebook credentials are configured
-        Check karo ke Facebook credentials configure hain ya nahi
-        
+        Check if LinkedIn credentials are configured
+        Check karo ke LinkedIn credentials configure hain ya nahi
+
         Returns:
-            bool: True if both token and page_id are available
+            bool: True if access token is available
         """
-        # Roman Urdu: Credentials check karna
-        has_token = bool(self.page_token and self.page_token.strip())
-        has_id = bool(self.page_id and self.page_id.strip())
-        
+        # Roman Urdu: Token check karna
+        has_token = bool(self.access_token and self.access_token.strip())
+
         if not has_token:
-            logger.warning("FACEBOOK_PAGE_TOKEN not configured")
-        if not has_id:
-            logger.warning("FACEBOOK_PAGE_ID not configured")
-        
-        return has_token and has_id
+            logger.warning("LINKEDIN_ACCESS_TOKEN not configured")
+            logger.info("Token generate karne ke liye test_linkedin.py run karein")
+
+        return has_token
+
+    def get_profile_info(self) -> Optional[Dict[str, Any]]:
+        """
+        Get current user's LinkedIn profile information
+        Current user ki LinkedIn profile information lena
+
+        Returns:
+            dict: Profile information or None if error
+        """
+        # Roman Urdu: API endpoint
+        endpoint = f"{LINKEDIN_API_BASE_URL}/me"
+
+        # Roman Urdu: Request headers
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'X-Restli-Protocol-Version': '2.0.0'
+        }
+
+        try:
+            # Roman Urdu: API call
+            response = requests.get(endpoint, headers=headers, timeout=10)
+            response.raise_for_status()
+            profile_data = response.json()
+
+            logger.info(f"Profile retrieved: {profile_data.get('id', 'Unknown')}")
+            return profile_data
+
+        except requests.exceptions.RequestException as e:
+            error_msg = f"Profile fetch error: {str(e)}"
+            logger.error(error_msg)
+            log_error("LINKEDIN_PROFILE_ERROR", str(e),
+                     action="get_profile_info", source="linkedin_poster")
+            return None
 
     def read_dashboard_content(self) -> Optional[str]:
         """
         Read content from Dashboard.md
         Dashboard.md se content parhna
-        
+
         Returns:
             str: Dashboard content or None if error
         """
         # Roman Urdu: Audit log for file read
-        log_file_operation("READ", DASHBOARD_PATH, source="facebook_poster")
-        
+        log_file_operation("READ", DASHBOARD_PATH, source="linkedin_poster")
+
         try:
             if not os.path.exists(DASHBOARD_PATH):
                 logger.warning(f"Dashboard.md not found: {DASHBOARD_PATH}")
                 return None
-            
+
             with open(DASHBOARD_PATH, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             # Roman Urdu: Audit log for successful read
-            log_file_operation("READ", DASHBOARD_PATH, result="SUCCESS", 
-                              file_size=len(content), source="facebook_poster")
-            
+            log_file_operation("READ", DASHBOARD_PATH, result="SUCCESS",
+                              file_size=len(content), source="linkedin_poster")
+
             logger.info(f"Read Dashboard.md ({len(content)} characters)")
             return content
-            
+
         except Exception as e:
             logger.error(f"Error reading Dashboard.md: {str(e)}")
-            log_error("DASHBOARD_READ_ERROR", str(e), 
+            log_error("DASHBOARD_READ_ERROR", str(e),
                      file_involved=DASHBOARD_PATH, action="read_dashboard_content")
             return None
 
-    def format_post_content(self, content: str, custom_message: str = None) -> str:
+    def format_linkedin_post(self, content: str, custom_message: str = None) -> str:
         """
-        Format content for Facebook post
-        Content ko Facebook post ke liye format karna
-        
+        Format content for professional LinkedIn post
+        Content ko professional LinkedIn post ke liye format karna
+
         Args:
             content: Raw content to format
             custom_message: Optional custom message to prepend
-        
+
         Returns:
-            str: Formatted Facebook post content
+            str: Formatted LinkedIn post content
         """
         # Roman Urdu: Post formatting shuru karna
-        logger.info("Formatting content for Facebook post")
-        
+        logger.info("Formatting content for LinkedIn post")
+
         # Roman Urdu: Timestamp add karna
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         # Roman Urdu: Custom message ya default header
         if custom_message:
             header = custom_message
         else:
-            header = f"🤖 AI Employee System Update"
-        
+            header = "🤖 AI Employee System Update"
+
         # Roman Urdu: Content ko clean karna (remove markdown headers)
         clean_content = content
         for i in range(6, 0, -1):
             clean_content = clean_content.replace('#' * i + ' ', '')
-        
-        # Roman Urdu: Lines ko limit karna (Facebook has character limits)
+
+        # Roman Urdu: LinkedIn ke liye optimize karna
+        # Line breaks add karna for readability
         lines = clean_content.split('\n')
-        max_lines = 15
-        if len(lines) > max_lines:
-            clean_content = '\n'.join(lines[:max_lines]) + '\n\n... (truncated)'
-        
+        formatted_lines = []
+
+        for line in lines:
+            # Roman Urdu: Empty lines skip karna
+            if line.strip():
+                formatted_lines.append(line)
+
+        # Roman Urdu: Join with proper spacing
+        clean_content = '\n\n'.join(formatted_lines[:10])  # LinkedIn limit
+
+        # Roman Urdu: Hashtags add karna
+        hashtags = "#AIEmployee #Automation #Productivity #TechInnovation #LinkedInAutomation"
+
         # Roman Urdu: Final formatted post
         formatted_post = f"""{header}
 
@@ -249,46 +335,47 @@ class FacebookPoster:
 
 ---
 📅 Posted: {timestamp}
-🔧 AI Employee System - Gold Tier
-#AIEmployee #Automation #Productivity"""
-        
+🔧 AI Employee System - Platinum Tier
+
+{hashtags}"""
+
+        # Roman Urdu: Character count check (LinkedIn limit: 3000)
+        if len(formatted_post) > 3000:
+            logger.warning(f"Post too long ({len(formatted_post)} chars), truncating...")
+            formatted_post = formatted_post[:2900] + "\n\n... (truncated)"
+
         logger.info(f"Formatted post ({len(formatted_post)} characters)")
         return formatted_post
 
-    def create_post_draft(self, content: str, image_path: str = None, 
-                         message: str = None) -> str:
+    def create_post_draft(self, content: str, message: str = None) -> str:
         """
         Create a post draft file
         Post draft file banana
-        
+
         Args:
             content: Post content
-            image_path: Optional image path
             message: Optional custom message
-        
+
         Returns:
             str: Path to draft file
         """
         # Roman Urdu: Draft file ka naam aur path
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        draft_filename = f"Facebook_Draft_{timestamp}.md"
+        draft_filename = f"LinkedIn_Draft_{timestamp}.md"
         draft_path = os.path.join(PENDING_POSTS_DIR, draft_filename)
-        
+
         # Roman Urdu: Draft content create karna
-        draft_content = f"""# Facebook Post Draft
+        draft_content = f"""# LinkedIn Post Draft
 
 ## Status: Pending Review
 
 ## Post Details
 - **Created:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-- **Platform:** Facebook Page
+- **Platform:** LinkedIn
 - **Test Mode:** {self.test_mode}
 
 ## Content
 {content}
-
-## Image
-{"```" + image_path + "```" if image_path else "*No image attached*"}
 
 ## Custom Message
 {message if message else "*Using default message*"}
@@ -300,153 +387,211 @@ Review this draft and either:
 3. Edit content and save
 
 ---
-*Generated by AI Employee Facebook Poster*
+*Generated by AI Employee LinkedIn Poster*
 """
-        
+
         # Roman Urdu: Draft file save karna
         try:
             with open(draft_path, 'w', encoding='utf-8') as f:
                 f.write(draft_content)
-            
+
             # Roman Urdu: Audit log
-            log_file_operation("WRITE", draft_path, result="SUCCESS", 
-                              file_size=len(draft_content), source="facebook_poster")
-            
+            log_file_operation("WRITE", draft_path, result="SUCCESS",
+                              file_size=len(draft_content), source="linkedin_poster")
+
             logger.info(f"Draft saved: {draft_path}")
             return draft_path
-            
+
         except Exception as e:
             logger.error(f"Error saving draft: {str(e)}")
-            log_error("DRAFT_SAVE_ERROR", str(e), 
+            log_error("DRAFT_SAVE_ERROR", str(e),
                      file_involved=draft_path, action="create_post_draft")
             raise
 
     @retry_with_backoff(max_retries=3, base_delay=1.0, max_delay=10.0)
-    def post_to_facebook_api(self, content: str, image_path: str = None) -> Dict[str, Any]:
+    def post_to_linkedin_api(self, content: str) -> Dict[str, Any]:
         """
-        Post to Facebook Page using Graph API
-        Facebook Graph API se Page par post karna
-        
+        Post to LinkedIn using API v2
+        LinkedIn API v2 se post karna
+
         Args:
             content: Formatted post content
-            image_path: Optional path to image file
-        
+
         Returns:
-            dict: Facebook API response
+            dict: LinkedIn API response
         """
-        # Roman Urdu: API request prepare karna
-        endpoint = f"{FACEBOOK_GRAPH_URL}/{self.page_id}/feed"
-        
-        # Roman Urdu: Request parameters
-        params = {
-            'message': content,
-            'access_token': self.page_token
+        # Roman Urdu: API endpoint - Share API
+        endpoint = f"{LINKEDIN_API_BASE_URL}/shares"
+
+        # Roman Urdu: Get person URN (required for posting)
+        person_urn = self._get_person_urn()
+
+        if not person_urn:
+            return {
+                'success': False,
+                'error': 'Could not get person URN'
+            }
+
+        # Roman Urdu: Request headers
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'X-Restli-Protocol-Version': '2.0.0',
+            'Content-Type': 'application/json',
+            'linkedin-version': LINKEDIN_API_VERSION
         }
-        
-        # Roman Urdu: Image attachment handle karna
-        files = {}
-        if image_path and os.path.exists(image_path):
-            try:
-                files['source'] = open(image_path, 'rb')
-                logger.info(f"Attaching image: {image_path}")
-            except Exception as e:
-                logger.warning(f"Could not attach image: {str(e)}")
-        
+
+        # Roman Urdu: Request body - LinkedIn Share API format
+        payload = {
+            "owner": person_urn,
+            "subject": "AI Employee System Update",
+            "text": {
+                "text": content
+            },
+            "distribution": {
+                "feedDistribution": "MAIN_FEED",
+                "targetEntities": [],
+                "thirdPartyDistributionChannels": []
+            },
+            "lifecycleState": "PUBLISHED",
+            "visibility": "PUBLIC"
+        }
+
         # Roman Urdu: API call log
-        logger.info(f"Posting to Facebook Page: {self.page_id}")
-        log_task_start("Facebook API Post", file_involved=image_path or "text-only",
-                      source="facebook_poster")
-        
+        logger.info(f"Posting to LinkedIn (Owner: {person_urn})")
+        log_task_start("LinkedIn API Post", source="linkedin_poster")
+
         try:
             # Roman Urdu: POST request bhejna
-            response = requests.post(endpoint, data=params, files=files, timeout=30)
-            
+            response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+
             # Roman Urdu: Response check karna
             response.raise_for_status()
             result = response.json()
-            
+
             # Roman Urdu: Success log
-            logger.info(f"Facebook post successful: {result}")
-            log_task_complete("Facebook API Post", result="SUCCESS", 
-                             source="facebook_poster")
-            
+            logger.info(f"LinkedIn post successful: {result}")
+            log_task_complete("LinkedIn API Post", result="SUCCESS",
+                             source="linkedin_poster")
+
             return {
                 'success': True,
                 'post_id': result.get('id'),
+                'post_urn': result.get('share'),
                 'response': result
             }
-            
+
         except requests.exceptions.HTTPError as e:
             # Roman Urdu: HTTP error handle karna
-            error_msg = f"Facebook API HTTP Error: {str(e)}"
+            error_msg = f"LinkedIn API HTTP Error: {str(e)}"
             logger.error(error_msg)
-            log_error("FACEBOOK_HTTP_ERROR", str(e), action="post_to_facebook_api")
+
+            # Roman Urdu: Error response parse karna
+            try:
+                error_response = e.response.json()
+                error_details = error_response.get('message', str(e))
+            except:
+                error_details = str(e)
+
+            log_error("LINKEDIN_HTTP_ERROR", error_details,
+                     action="post_to_linkedin_api", source="linkedin_poster")
+
             return {
                 'success': False,
-                'error': error_msg,
-                'status_code': e.response.status_code if hasattr(e, 'response') else None
+                'error': error_details,
+                'status_code': e.response.status_code
             }
-            
+
         except requests.exceptions.RequestException as e:
             # Roman Urdu: Network error handle karna
             error_msg = f"Network error: {str(e)}"
             logger.error(error_msg)
-            log_error("FACEBOOK_NETWORK_ERROR", str(e), action="post_to_facebook_api")
+            log_error("LINKEDIN_NETWORK_ERROR", str(e),
+                     action="post_to_linkedin_api", source="linkedin_poster")
             return {
                 'success': False,
                 'error': error_msg
             }
-            
-        finally:
-            # Roman Urdu: File handle close karna
-            if files and 'source' in files:
-                files['source'].close()
 
-    def post_to_facebook(self, content: str = None, image_path: str = None,
-                        custom_message: str = None, 
+    def _get_person_urn(self) -> Optional[str]:
+        """
+        Get LinkedIn person URN (required for posting)
+        LinkedIn person URN lena (posting ke liye zaroori)
+
+        Returns:
+            str: Person URN (e.g., "urn:li:person:XXXXXXXXXX")
+        """
+        # Roman Urdu: API endpoint
+        endpoint = f"{LINKEDIN_API_BASE_URL}/me"
+
+        # Roman Urdu: Request headers
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'X-Restli-Protocol-Version': '2.0.0'
+        }
+
+        try:
+            # Roman Urdu: API call
+            response = requests.get(endpoint, headers=headers, timeout=10)
+            response.raise_for_status()
+            profile_data = response.json()
+
+            # Roman Urdu: URN extract karna
+            person_id = profile_data.get('id')
+            if person_id:
+                person_urn = f"urn:li:person:{person_id}"
+                logger.info(f"Person URN: {person_urn}")
+                return person_urn
+            else:
+                logger.error("Person ID not found in profile")
+                return None
+
+        except Exception as e:
+            logger.error(f"Error getting person URN: {str(e)}")
+            return None
+
+    def post_to_linkedin(self, content: str = None, custom_message: str = None,
                         read_from_dashboard: bool = True) -> Dict[str, Any]:
         """
-        Main function to post to Facebook
-        Facebook par post karne ka main function
-        
+        Main function to post to LinkedIn
+        LinkedIn par post karne ka main function
+
         Args:
             content: Custom content (overrides dashboard if provided)
-            image_path: Optional path to image file
             custom_message: Optional custom message
             read_from_dashboard: If True, read content from Dashboard.md
-        
+
         Returns:
             dict: Result with success status and post/draft info
         """
         # Roman Urdu: Post operation start karna
         logger.info("=" * 60)
-        logger.info("Facebook Post Operation Started")
+        logger.info("LinkedIn Post Operation Started")
         logger.info("=" * 60)
-        
-        log_task_start("Facebook Post", source="facebook_poster",
+
+        log_task_start("LinkedIn Post", source="linkedin_poster",
                       test_mode=str(self.test_mode))
-        
+
         # Roman Urdu: Step 1: Content obtain karna
         if content is None and read_from_dashboard:
             logger.info("Reading content from Dashboard.md...")
             dashboard_content = self.read_dashboard_content()
-            
+
             if dashboard_content:
                 content = dashboard_content
             else:
                 content = "AI Employee System - System Update\n\nNo dashboard content available."
                 logger.warning("Using default content (Dashboard not available)")
-        
+
         # Roman Urdu: Step 2: Content format karna
-        formatted_content = self.format_post_content(content, custom_message)
-        
+        formatted_content = self.format_linkedin_post(content, custom_message)
+
         # Roman Urdu: Step 3: Test mode check
         if self.test_mode or not self.is_configured():
             logger.info("Test mode or not configured - saving as draft")
-            
+
             # Roman Urdu: Draft save karna
-            draft_path = self.create_post_draft(formatted_content, image_path, custom_message)
-            
+            draft_path = self.create_post_draft(formatted_content, custom_message)
+
             result = {
                 'success': True,
                 'mode': 'draft',
@@ -454,36 +599,37 @@ Review this draft and either:
                 'message': 'Post saved as draft (test mode or not configured)',
                 'content_preview': formatted_content[:200] + '...' if len(formatted_content) > 200 else formatted_content
             }
-            
+
             logger.info(f"Draft created: {draft_path}")
-            log_task_complete("Facebook Post", result="DRAFT_SAVED", 
-                             source="facebook_poster")
-            
+            log_task_complete("LinkedIn Post", result="DRAFT_SAVED",
+                             source="linkedin_poster")
+
             return result
-        
-        # Roman Urdu: Step 4: Actual Facebook post
-        logger.info("Posting to Facebook...")
-        api_result = self.post_to_facebook_api(formatted_content, image_path)
-        
+
+        # Roman Urdu: Step 4: Actual LinkedIn post
+        logger.info("Posting to LinkedIn...")
+        api_result = self.post_to_linkedin_api(formatted_content)
+
         if api_result['success']:
             # Roman Urdu: Post confirmation
             result = {
                 'success': True,
                 'mode': 'published',
                 'post_id': api_result['post_id'],
-                'post_url': f"https://facebook.com/{api_result['post_id']}",
+                'post_urn': api_result['post_urn'],
+                'post_url': f"https://www.linkedin.com/feed/update/{api_result['post_urn']}",
                 'message': 'Post published successfully',
                 'content_preview': formatted_content[:200] + '...' if len(formatted_content) > 200 else formatted_content
             }
-            
+
             logger.info(f"Post published: {api_result['post_id']}")
-            log_task_complete("Facebook Post", result="PUBLISHED", 
-                             source="facebook_poster")
+            log_task_complete("LinkedIn Post", result="PUBLISHED",
+                             source="linkedin_poster")
         else:
             # Roman Urdu: Post failed - save as draft
             logger.warning("Post failed - saving as draft")
-            draft_path = self.create_post_draft(formatted_content, image_path, custom_message)
-            
+            draft_path = self.create_post_draft(formatted_content, custom_message)
+
             result = {
                 'success': False,
                 'mode': 'failed_to_draft',
@@ -492,22 +638,22 @@ Review this draft and either:
                 'message': 'Post failed, saved as draft',
                 'content_preview': formatted_content[:200] + '...' if len(formatted_content) > 200 else formatted_content
             }
-            
-            log_task_complete("Facebook Post", result="FAILED", 
+
+            log_task_complete("LinkedIn Post", result="FAILED",
                              error=api_result.get('error', 'Unknown'),
-                             source="facebook_poster")
-        
+                             source="linkedin_poster")
+
         logger.info("=" * 60)
-        logger.info("Facebook Post Operation Complete")
+        logger.info("LinkedIn Post Operation Complete")
         logger.info("=" * 60)
-        
+
         return result
 
     def list_pending_posts(self) -> list:
         """
         List all pending post drafts
         Saare pending post drafts ko list karna
-        
+
         Returns:
             list: List of draft file paths
         """
@@ -515,12 +661,12 @@ Review this draft and either:
         try:
             drafts = []
             for file in os.listdir(PENDING_POSTS_DIR):
-                if file.startswith("Facebook_Draft_") and file.endswith(".md"):
+                if file.startswith("LinkedIn_Draft_") and file.endswith(".md"):
                     drafts.append(os.path.join(PENDING_POSTS_DIR, file))
-            
+
             logger.info(f"Found {len(drafts)} pending post drafts")
             return sorted(drafts)
-            
+
         except Exception as e:
             logger.error(f"Error listing drafts: {str(e)}")
             return []
@@ -529,41 +675,46 @@ Review this draft and either:
         """
         Get basic statistics about posting
         Posting ke basic statistics lena
-        
+
         Returns:
             dict: Statistics dictionary
         """
         # Roman Urdu: Statistics collect karna
         drafts = self.list_pending_posts()
-        
+
+        # Roman Urdu: Profile info lena
+        profile_info = None
+        if self.is_configured():
+            profile_info = self.get_profile_info()
+
         stats = {
             'pending_drafts': len(drafts),
             'configured': self.is_configured(),
             'test_mode': self.test_mode,
-            'page_id': self.page_id[:10] + '...' if self.page_id else 'Not configured',
+            'client_id': self.client_id[:8] + '...' if self.client_id else 'Not configured',
+            'profile': profile_info,
             'vault_path': PENDING_POSTS_DIR
         }
-        
+
         logger.info(f"Stats: {stats}")
         return stats
 
 
-def quick_post(text: str = None, image: str = None, test_mode: bool = True):
+def quick_post(text: str = None, test_mode: bool = True):
     """
     Quick post function for easy usage
     Easy usage ke liye quick post function
-    
+
     Args:
         text: Custom text (optional)
-        image: Image path (optional)
         test_mode: Save as draft if True
-    
+
     Returns:
         dict: Post result
     """
     # Roman Urdu: Quick poster create karna
-    poster = FacebookPoster(test_mode=test_mode)
-    return poster.post_to_facebook(content=text, image_path=image, 
+    poster = LinkedInPoster(test_mode=test_mode)
+    return poster.post_to_linkedin(content=text,
                                    read_from_dashboard=(text is None))
 
 
@@ -573,88 +724,84 @@ def main():
     Interactive mode ke saath main function
     """
     print("=" * 60)
-    print("Facebook Poster - AI Employee System")
+    print("LinkedIn Poster - AI Employee System")
     print("=" * 60)
     print()
-    
+
     # Roman Urdu: Test mode prompt
     print("Choose mode:")
     print("1. Test Mode (Save drafts only)")
-    print("2. Live Mode (Post to Facebook)")
+    print("2. Live Mode (Post to LinkedIn)")
     print()
-    
+
     choice = input("Enter choice (1 or 2, default=1): ").strip()
     test_mode = choice != "2"
-    
-    # Roman Urdu: Facebook poster initialize karna
-    poster = FacebookPoster(test_mode=test_mode)
-    
+
+    # Roman Urdu: LinkedIn poster initialize karna
+    poster = LinkedInPoster(test_mode=test_mode)
+
     # Roman Urdu: Configuration status dikhana
     print()
     print("Configuration Status:")
     stats = poster.get_post_stats()
     print(f"  - Test Mode: {stats['test_mode']}")
     print(f"  - Configured: {stats['configured']}")
-    print(f"  - Page ID: {stats['page_id']}")
+    print(f"  - Client ID: {stats['client_id']}")
     print(f"  - Pending Drafts: {stats['pending_drafts']}")
+
+    if stats['profile']:
+        print(f"  - Profile ID: {stats['profile'].get('id', 'N/A')}")
+
     print()
-    
+
     # Roman Urdu: Content source prompt
     print("Content Source:")
     print("1. Dashboard.md")
     print("2. Custom Text")
     print()
-    
+
     content_choice = input("Enter choice (1 or 2, default=1): ").strip()
-    
+
     if content_choice == "2":
         print()
         custom_text = input("Enter post content: ").strip()
         custom_message = input("Enter custom message (optional): ").strip()
-        image_path = input("Enter image path (optional): ").strip()
-        
-        if not image_path:
-            image_path = None
     else:
         custom_text = None
         custom_message = None
-        image_path = input("Enter image path (optional): ").strip()
-        if not image_path:
-            image_path = None
-    
+
     print()
     print("-" * 60)
-    
+
     # Roman Urdu: Post operation execute karna
-    result = poster.post_to_facebook(
+    result = poster.post_to_linkedin(
         content=custom_text,
-        image_path=image_path,
         custom_message=custom_message,
         read_from_dashboard=(content_choice != "2")
     )
-    
+
     # Roman Urdu: Result display karna
     print()
     print("=" * 60)
     print("Post Result:")
     print("=" * 60)
-    print(f"  Status: {'✓ Success' if result['success'] else '✗ Failed'}")
+    print(f"  Status: {'[OK] Success' if result['success'] else '[FAIL] Failed'}")
     print(f"  Mode: {result['mode']}")
     print(f"  Message: {result['message']}")
-    
+
     if 'post_id' in result:
         print(f"  Post ID: {result['post_id']}")
         print(f"  URL: {result.get('post_url', 'N/A')}")
-    
+
     if 'draft_path' in result:
         print(f"  Draft Path: {result['draft_path']}")
-    
+
     print()
     print("Content Preview:")
     print("-" * 60)
     print(result.get('content_preview', 'N/A'))
     print("-" * 60)
-    
+
     # Roman Urdu: Pending posts list
     drafts = poster.list_pending_posts()
     if drafts:
@@ -662,9 +809,9 @@ def main():
         print(f"Pending Drafts ({len(drafts)}):")
         for draft in drafts[-5:]:  # Show last 5
             print(f"  - {os.path.basename(draft)}")
-    
+
     print()
-    print("Check facebook_poster.log for detailed logs")
+    print("Check linkedin_poster.log for detailed logs")
     print("=" * 60)
 
 
