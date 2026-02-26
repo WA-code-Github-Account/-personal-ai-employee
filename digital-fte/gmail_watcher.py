@@ -12,23 +12,23 @@ Current Account: wahishaikh545@gmail.com
 Step 1: Delete Old Token (if switching from previous account)
 ─────────────────────────────────────────────────────────────
 Delete token.pickle file from this directory:
-    D:\AI_Workspace_bronze_silver_gold_platinum\digital-fte\token.pickle
+    digital-fte/token.pickle
 
 This forces re-authentication with the new account.
-Command: del D:\AI_Workspace_bronze_silver_gold_platinum\digital-fte\token.pickle
+Command: del digital-fte\\token.pickle
 
 Step 2: Ensure credentials.json Exists
 ─────────────────────────────────────────────────────────────
 Place your credentials.json file in this directory:
-    D:\AI_Workspace_bronze_silver_gold_platinum\digital-fte\credentials.json
+    digital-fte/credentials.json
 
 Download from Google Cloud Console:
     https://console.cloud.google.com/apis/credentials
-    → Create OAuth 2.0 Client ID → Desktop App → Download JSON
+    -> Create OAuth 2.0 Client ID -> Desktop App -> Download JSON
 
 Step 3: Run Gmail Watcher
 ─────────────────────────────────────────────────────────────
-    cd D:\AI_Workspace_bronze_silver_gold_platinum\digital-fte
+    cd digital-fte
     python gmail_watcher.py
 
 Step 4: Authorize in Browser

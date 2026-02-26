@@ -22,10 +22,15 @@ WHAT THIS SCRIPT DOES
    -> demo_email_1.md - "Demo: Project Update"
    -> demo_email_2.md - "Demo: Meeting Request"
    -> demo_email_3.md - "Demo: Invoice Reminder"
+   -> demo_email_4.md - "Demo: Welcome to the Team"
 
-4. CLEANS up all .log files in the project
+4. CREATES demo WhatsApp messages with fake phone numbers:
+   -> WhatsApp messages with +1-555-xxxx numbers (fake)
+   -> Safe for public GitHub
 
-5. SHOWS a summary of what was cleaned
+5. CLEANS up all .log files in the project
+
+6. SHOWS a summary of what was cleaned
 
 ═══════════════════════════════════════════════════════════════════════════════
 USAGE
@@ -311,7 +316,7 @@ def clean_log_files():
 def show_summary(backup_folder, emails_deleted, demo_created, logs_deleted):
     """Show summary of cleanup operations"""
     print_header("CLEANUP SUMMARY")
-    
+
     print(f"""
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  OPERATION                          │  STATUS                               │
@@ -325,26 +330,32 @@ def show_summary(backup_folder, emails_deleted, demo_created, logs_deleted):
 │  Email Files Deleted:               │  {emails_deleted} files removed        │
 │  (From Inbox, Needs_Action, Done)   │                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Demo Files Created:                │  {demo_created} files created          │
+│  Demo Emails Created:               │  {demo_created} files created          │
 │  (Safe for public GitHub)           │                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Demo WhatsApp Messages Created:    │  4 files created                       │
+│  (Fake phone numbers: +1-555-xxxx)  │                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Log Files Cleaned:                 │  {logs_deleted} files removed          │
 │  (Cleared all .log files)           │                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
-✅ Repository is now safe for public GitHub!
+[SUCCESS] Repository is now safe for public GitHub!
 
 Your real data is safely backed up at:
   {backup_folder}
 
-Demo emails are located at:
-  {os.path.join(VAULT_BASE, "Inbox")}
+Demo files are located at:
+  Emails: {os.path.join(VAULT_BASE, "Inbox")}
+  WhatsApp: {os.path.join(VAULT_BASE, "Needs_Action", "whatsapp")}
 
 ═══════════════════════════════════════════════════════════════════════════════
 NEXT STEPS
 ═══════════════════════════════════════════════════════════════════════════════
 
-1. Review the demo emails in AI_Employee_Vault/Inbox/
+1. Review demo files:
+   - Emails: AI_Employee_Vault/Inbox/
+   - WhatsApp: AI_Employee_Vault/Needs_Action/whatsapp/
 2. Run 'git status' to see the changes
 3. Add and commit the changes
 4. Push to GitHub
@@ -372,33 +383,57 @@ This script will:
   1. Backup real emails to external folder
   2. Delete real emails from git folders
   3. Create demo email files
-  4. Clean all .log files
+  4. Create demo WhatsApp messages (fake phone numbers)
+  5. Clean all .log files
 
-⚠️  WARNING: This will delete files from your vault folders!
+WARNING: This will delete files from your vault folders!
     Real data will be backed up safely.
 
 """)
-    
+
     # Confirm before proceeding
     response = input("Continue with cleanup? (yes/no): ").strip().lower()
     if response != "yes":
         print("\nCleanup cancelled.")
         return
-    
+
     print("\nStarting cleanup...")
-    
+
     # Step 1: Backup emails
     backup_folder = backup_email_files()
-    
+
     # Step 2: Delete email files
     emails_deleted = delete_email_files()
-    
+
     # Step 3: Create demo emails
     demo_created = create_demo_emails()
-    
-    # Step 4: Clean log files
+
+    # Step 4: Create demo WhatsApp messages
+    print_header("STEP 4: CREATING DEMO WHATSAPP MESSAGES")
+    whatsapp_created = 0
+    try:
+        import subprocess
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        demo_whatsapp_script = os.path.join(script_dir, "digital-fte", "create_demo_whatsapp.py")
+        if os.path.exists(demo_whatsapp_script):
+            result = subprocess.run(
+                ["python", demo_whatsapp_script],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                whatsapp_created = 4  # We know the script creates 4 messages
+                print("Demo WhatsApp messages created successfully")
+            else:
+                print(f"Error: {result.stderr}")
+        else:
+            print(f"Script not found: {demo_whatsapp_script}")
+    except Exception as e:
+        print(f"Error creating demo WhatsApp: {e}")
+
+    # Step 5: Clean log files
     logs_deleted = clean_log_files()
-    
+
     # Show summary
     show_summary(backup_folder, emails_deleted, demo_created, logs_deleted)
 
