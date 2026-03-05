@@ -107,6 +107,14 @@ Ye script verify karegi ke token valid hai aur profile info display karegi.
 
 • Approval Process: Some permissions require LinkedIn approval (2-3 days).
 
+• Demo Account for Testing:
+  For hackathon/demo purposes, use TEST MODE:
+    python linkedin_poster.py --test
+  
+  This saves posts as drafts without actual API calls.
+  Demo profiles used: "Demo User", "Recruiter Demo", etc.
+  No real LinkedIn account needed for testing.
+
 ═══════════════════════════════════════════════════════════════════════════════
 🔗 USEFUL LINKS
 ═══════════════════════════════════════════════════════════════════════════════

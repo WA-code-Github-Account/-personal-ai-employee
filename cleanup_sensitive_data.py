@@ -28,9 +28,14 @@ WHAT THIS SCRIPT DOES
    -> WhatsApp messages with +1-555-xxxx numbers (fake)
    -> Safe for public GitHub
 
-5. CLEANS up all .log files in the project
+5. CREATES demo LinkedIn content:
+   -> LinkedIn messages with fake profiles
+   -> LinkedIn post drafts with demo content
+   -> Safe for public GitHub
 
-6. SHOWS a summary of what was cleaned
+6. CLEANS up all .log files in the project
+
+7. SHOWS a summary of what was cleaned
 
 ═══════════════════════════════════════════════════════════════════════════════
 USAGE
@@ -313,7 +318,7 @@ def clean_log_files():
     return deleted_count
 
 
-def show_summary(backup_folder, emails_deleted, demo_created, logs_deleted):
+def show_summary(backup_folder, emails_deleted, demo_created, logs_deleted, linkedin_created=0):
     """Show summary of cleanup operations"""
     print_header("CLEANUP SUMMARY")
 
@@ -336,6 +341,9 @@ def show_summary(backup_folder, emails_deleted, demo_created, logs_deleted):
 │  Demo WhatsApp Messages Created:    │  4 files created                       │
 │  (Fake phone numbers: +1-555-xxxx)  │                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
+│  Demo LinkedIn Content Created:     │  {linkedin_created} files created      │
+│  (Fake profiles & posts)            │                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
 │  Log Files Cleaned:                 │  {logs_deleted} files removed          │
 │  (Cleared all .log files)           │                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -348,6 +356,8 @@ Your real data is safely backed up at:
 Demo files are located at:
   Emails: {os.path.join(VAULT_BASE, "Inbox")}
   WhatsApp: {os.path.join(VAULT_BASE, "Needs_Action", "whatsapp")}
+  LinkedIn: {os.path.join(VAULT_BASE, "Inbox")} (messages)
+            {os.path.join(VAULT_BASE, "Pending_Posts")} (posts)
 
 ═══════════════════════════════════════════════════════════════════════════════
 NEXT STEPS
@@ -356,6 +366,8 @@ NEXT STEPS
 1. Review demo files:
    - Emails: AI_Employee_Vault/Inbox/
    - WhatsApp: AI_Employee_Vault/Needs_Action/whatsapp/
+   - LinkedIn: AI_Employee_Vault/Inbox/ (messages)
+               AI_Employee_Vault/Pending_Posts/ (posts)
 2. Run 'git status' to see the changes
 3. Add and commit the changes
 4. Push to GitHub
@@ -431,11 +443,32 @@ WARNING: This will delete files from your vault folders!
     except Exception as e:
         print(f"Error creating demo WhatsApp: {e}")
 
-    # Step 5: Clean log files
+    # Step 5: Create demo LinkedIn content
+    print_header("STEP 5: CREATING DEMO LINKEDIN CONTENT")
+    linkedin_created = 0
+    try:
+        demo_linkedin_script = os.path.join(script_dir, "digital-fte", "create_demo_linkedin.py")
+        if os.path.exists(demo_linkedin_script):
+            result = subprocess.run(
+                ["python", demo_linkedin_script],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                linkedin_created = 6  # 3 messages + 3 posts
+                print("Demo LinkedIn content created successfully")
+            else:
+                print(f"Error: {result.stderr}")
+        else:
+            print(f"Script not found: {demo_linkedin_script}")
+    except Exception as e:
+        print(f"Error creating demo LinkedIn: {e}")
+
+    # Step 6: Clean log files
     logs_deleted = clean_log_files()
 
     # Show summary
-    show_summary(backup_folder, emails_deleted, demo_created, logs_deleted)
+    show_summary(backup_folder, emails_deleted, demo_created, logs_deleted, linkedin_created)
 
 
 if __name__ == "__main__":
